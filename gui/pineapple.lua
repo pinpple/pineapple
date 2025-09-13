@@ -309,7 +309,6 @@ function Library:CreateMain(properties)
 		local Main = {}
 
 		properties = {
-			textCharacters = properties.textCharacters or 10,
 			Toggle = properties.Toggle or 'RightShift',
 			EnableOnExecute = properties.EnableOnExecute or false,
 			MainTextColor = properties.MainTextColor or Color3.fromRGB(255, 255, 10)
@@ -318,7 +317,7 @@ function Library:CreateMain(properties)
 		shared.PinappleScriptLoaded = true
 
 		local ScreenGui = Instance.new('ScreenGui', CoreGui)
-		ScreenGui.Name = Generate(properties.textCharacters)
+		ScreenGui.Name = Generate(12)
 		ScreenGui.ResetOnSpawn = false
 
 		UserInputService.InputBegan:Connect(function(keycode, gameProcessed)
