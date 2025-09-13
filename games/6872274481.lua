@@ -83,9 +83,42 @@ end
 
 pineapple:CreateMain()
 
+local tabs = {
+    Combat = pineapple:CreateTab({
+        Name = 'Combat',
+        Icon = 'rbxassetid://138185990548352',
+        ImageColor = Color3.fromRGB(255, 255, 255)
+    }),
+    Exploit = pineapple:CreateTab({
+        Name = 'Exploit',
+        Icon = 'rbxassetid://71954798465945',
+        ImageColor = Color3.fromRGB(255, 255, 255)
+    }),
+    Move = pineapple:CreateTab({
+        Name = 'Move',
+        Icon = 'rbxassetid://91366694317593',
+        ImageColor = Color3.fromRGB(255, 255, 255)
+    }),
+    Player = pineapple:CreateTab({
+        Name = 'Player',
+        Icon = 'rbxassetid://103157697311305',
+        ImageColor = Color3.fromRGB(255, 255, 255)
+    }),
+    Visual = pineapple:CreateTab({
+        Name = 'Visual',
+        Icon = 'rbxassetid://118420030502964',
+        ImageColor = Color3.fromRGB(255, 255, 255)
+    }),
+    World = pineapple:CreateTab({
+        Name = 'World',
+        Icon = 'rbxassetid://76313147188124',
+        ImageColor = Color3.fromRGB(255, 255, 255)
+    })
+}
+
 do
     local Speed
-    Speed = pineapple:CreateToggle({
+    Speed = tabs.Move:CreateToggle({
         Name = 'Speed',
         Function = function(callback)
             if callback then
