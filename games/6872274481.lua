@@ -144,6 +144,21 @@ do
     })
 end
 
+do
+    local Uninject
+    Uninject = tabs.Exploit:CreateToggle({
+        Name = 'Uninject',
+        Function = function(callback)
+            if callback then
+                pineapple:Uninject()
+            end
+        end,
+        ToolTipText = 'Uninjects pineapple'
+    })
+end
+
+do
+
 --[[do
     local Killaura
     Killaura = pineapple:CreateToggle({
