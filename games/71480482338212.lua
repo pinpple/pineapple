@@ -4,7 +4,8 @@
     pineapple 🍍
     by @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy, @star
 
-    game: Bedwarz
+    game: Bedwarz 3
+	game link: https://www.roblox.com/games/71480482338212/BedwarZ#!/about
 	status: 🟢
 ]]
 
