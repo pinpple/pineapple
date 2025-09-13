@@ -95,32 +95,32 @@ local MainUI = pineapple:CreateMain()
 
 local tabs = {
     Combat = MainUI:CreateTab({
-        Name = 'Combat',
+        Text = 'Combat',
         Icon = 'rbxassetid://138185990548352',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
     Exploit = MainUI:CreateTab({
-        Name = 'Exploit',
+        Text = 'Exploit',
         Icon = 'rbxassetid://71954798465945',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
     Move = MainUI:CreateTab({
-        Name = 'Move',
+        Text = 'Move',
         Icon = 'rbxassetid://91366694317593',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
     Player = MainUI:CreateTab({
-        Name = 'Player',
+        Text = 'Player',
         Icon = 'rbxassetid://103157697311305',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
     Visual = MainUI:CreateTab({
-        Name = 'Visual',
+        Text = 'Visual',
         Icon = 'rbxassetid://118420030502964',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
     World = MainUI:CreateTab({
-        Name = 'World',
+        Text = 'World',
         Icon = 'rbxassetid://76313147188124',
         ImageColor = Color3.fromRGB(255, 255, 255)
     })
