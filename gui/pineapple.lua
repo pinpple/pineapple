@@ -311,6 +311,7 @@ function Library:CreateMain(properties)
 		properties = {
 			textCharacters = properties.textCharacters or 10,
 			Toggle = properties.Toggle or 'RightShift',
+			EnableOnExecute = properties.EnableOnExecute or false,
 			MainTextColor = properties.MainTextColor or Color3.fromRGB(255, 255, 10)
 		}
 
@@ -346,10 +347,11 @@ function Library:CreateMain(properties)
 		local MainFrame = nil
 		if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled and not UserInputService.MouseEnabled then
 			if MainFrame == nil then
-				MainFrame = Instance.new('ScrollingFrame')
+				MainFrame = Instance.new("ScrollingFrame")
 				MainFrame.Parent = ScreenGui
 				MainFrame.Active = true
 				MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				print(MainFrame.BackgroundColor3)
 				MainFrame.BackgroundTransparency = 1
 				MainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 				MainFrame.BorderSizePixel = 0
@@ -357,19 +359,31 @@ function Library:CreateMain(properties)
 				MainFrame.CanvasPosition = Vector2.new(240, 0)
 				MainFrame.CanvasSize = UDim2.new(1.60000002, 0, 0, 0)
 				MainFrame.ScrollBarThickness = 8
-				MainFrame.Visible = true
+				MainFrame.Visible = properties.EnableOnExecute
 			end
 		elseif not UserInputService.TouchEnabled and UserInputService.KeyboardEnabled and UserInputService.MouseEnabled then
 			if MainFrame == nil then
-				MainFrame = Instance.new('Frame')
+				MainFrame = Instance.new("Frame")
 				MainFrame.Parent = ScreenGui
 				MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				MainFrame.BackgroundTransparency = 1
 				MainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 				MainFrame.Size = UDim2.new(1, 0, 1, 0)
-				MainFrame.Visible = true
+				MainFrame.Visible = properties.EnableOnExecute
 			end
 		end
+
+		spawn(function()
+			local OldX = 0
+			if MainFrame ~= nil and MainFrame.Parent then
+				for _, child in ipairs(MainFrame:GetChildren()) do
+					if child:IsA("GuiObject") then
+						child.Position = UDim2.new(0, OldX, 0, 0)
+						OldX = OldX + child.Size.X.Offset + 18
+					end
+				end
+			end
+		end)
 
 		local LibraryText = Instance.new('TextLabel', MainFrame)
 		LibraryText.Name = 'LibraryText'
@@ -404,7 +418,7 @@ function Library:CreateMain(properties)
 			local Tabs = {}
 
 			PropertiesToggle = {
-				Text = PropertiesToggle.Text or '',
+				Name = PropertiesToggle.Name or '',
 				Image = PropertiesToggle.Image or 'rbxassetid://0',
 				ImageColor = PropertiesToggle.ImageColor or Color3.fromRGB(255, 255, 255)
 			}
@@ -413,7 +427,7 @@ function Library:CreateMain(properties)
 			Tab.BackgroundTransparency = 0.03
 			Tab.BorderSizePixel = 0
 			Tab.BackgroundColor3 = Color3.fromRGB(25,25,25)
-			Tab.Position = UDim2.new(0.014,0,0.081,0)
+			--Tab.Position = UDim2.new(0.014,0,0.081,0)
 			Tab.Size = UDim2.new(0,185,0,25)
 			Tab.ZIndex = 2
 			Tab.Visible = true
@@ -534,7 +548,7 @@ function Library:CreateMain(properties)
 				DropdownButton.Size = UDim2.new(0,20,0,20)
 				DropdownButton.ZIndex = 2
 				DropdownButton.FontFace = Font.fromEnum(Enum.Font.SourceSans, Enum.FontWeight.Regular)
-				DropdownButton.Text = 'Λ'
+				DropdownButton.Text = '>'
 				DropdownButton.TextColor3 = Color3.fromRGB(255,255,255)
 				DropdownButton.TextScaled = true
 				DropdownButton.TextWrapped = true
