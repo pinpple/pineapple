@@ -85,7 +85,7 @@ do
 
             return inv:FindFirstChild(bestSword)
         end,
-        FOVController = bedwars.GetController('FOVController'),
+        FOVController = bedwars.GetController('FovController'),
         SwordController = bedwars.GetController('SwordController'),
         SprintController = bedwars.GetController('SprintController')
     }, nil)
