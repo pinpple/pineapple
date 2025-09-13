@@ -91,39 +91,35 @@ do
     }, nil)
 end
 
-pineapple:CreateMain({
-    textCharacters = 10,
-    Toggle = "RightShift",
-    MainTextColor = Color3.fromRGB(255, 255, 10)
-})
+local MainUI = pineapple:CreateMain()
 
 local tabs = {
-    Combat = pineapple:CreateTab({
+    Combat = MainUI:CreateTab({
         Name = 'Combat',
         Icon = 'rbxassetid://138185990548352',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Exploit = pineapple:CreateTab({
+    Exploit = MainUI:CreateTab({
         Name = 'Exploit',
         Icon = 'rbxassetid://71954798465945',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Move = pineapple:CreateTab({
+    Move = MainUI:CreateTab({
         Name = 'Move',
         Icon = 'rbxassetid://91366694317593',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Player = pineapple:CreateTab({
+    Player = MainUI:CreateTab({
         Name = 'Player',
         Icon = 'rbxassetid://103157697311305',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Visual = pineapple:CreateTab({
+    Visual = MainUI:CreateTab({
         Name = 'Visual',
         Icon = 'rbxassetid://118420030502964',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    World = pineapple:CreateTab({
+    World = MainUI:CreateTab({
         Name = 'World',
         Icon = 'rbxassetid://76313147188124',
         ImageColor = Color3.fromRGB(255, 255, 255)
