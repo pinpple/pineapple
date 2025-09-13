@@ -45,7 +45,7 @@ TextChatService.OnIncomingMessage = function(Message)
 
 	if Library['Whitelist'] and not shared.PineappleScriptUninjected and Library['Whitelist'][Message.TextSource.UserId].Allowed == true and Library['Whitelist'][Message.TextSource.UserId].Blacklisted == false then
 		task.spawn(function()
-			Properties.PrefixText = `<font color='rgb({Library["Whitelist"][Message.TextSource.UserId].Color})'>[{Library["Whitelist"][Message.TextSource.UserId].Tag}] </font>` .. Message.PrefixText
+			Properties.PrefixText = '<font color="#' .. Library['Whitelist'][Message.TextSource.UserId].Color:ToHex() .. '">' .. "[" .. Library['Whitelist'][Message.TextSource.UserId].Tag .. "]" .. '</font>' .. " " .. Properties.PrefixText
 		end)
 	end
 
