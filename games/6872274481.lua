@@ -1,3 +1,13 @@
+--[[
+
+    pineapple 🍍
+    by @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy, @star
+
+    game: Bedwars 
+	game link: https://www.roblox.com/games/6872265039/BedWars-ALL-KITS-FREE
+	status: 🟢
+]]
+
 local cloneref = cloneref or function(obj)
     return obj
 end

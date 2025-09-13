@@ -12,6 +12,18 @@ local Library = {
 			Tag = 'sus',
 			Color = Color3.fromRGB(60, 0, 255),
 		},
+		[1376949375] = {
+			Allowed = true,
+			Blacklisted = false,
+			Tag = 'Owner',
+			Color = Color3.fromRGB(60, 0, 255),
+		},
+		[9463963460] = {
+			Allowed = true,
+			Blacklisted = false,
+			Tag = 'Owner',
+			Color = Color3.fromRGB(60, 0, 255),
+		},
 	},
 }
 
@@ -45,7 +57,7 @@ TextChatService.OnIncomingMessage = function(Message)
 
 	if Library['Whitelist'] and not shared.PineappleScriptUninjected and Library['Whitelist'][Message.TextSource.UserId].Allowed == true and Library['Whitelist'][Message.TextSource.UserId].Blacklisted == false then
 		task.spawn(function()
-			Properties.PrefixText = `<font color='rgb({Library["Whitelist"][Message.TextSource.UserId].Color})'>[{Library["Whitelist"][Message.TextSource.UserId].Tag}] </font>` .. Message.PrefixText
+			Properties.PrefixText = '<font color="#' .. Library['Whitelist'][Message.TextSource.UserId].Color:ToHex() .. '">' .. "[" .. Library['Whitelist'][Message.TextSource.UserId].Tag .. "]" .. '</font>' .. " " .. Properties.PrefixText
 		end)
 	end
 
@@ -126,6 +138,8 @@ function addTooltip(gui, text)
 	end)
 end
 
+print("reached")
+
 function MakeDraggable(object)
 	local dragging, dragInput, dragStart, startPos
 
@@ -160,6 +174,127 @@ function MakeDraggable(object)
 		end
 	end)
 end
+
+local NotifScreenUI = Instance.new('ScreenGui', CoreGui)
+NotifScreenUI.Name = Generate(10)
+NotifScreenUI.ResetOnSpawn = false
+
+print("made")
+
+local notifMainFrame = nil
+if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled and not UserInputService.MouseEnabled then
+	if notifMainFrame == nil then
+		notifMainFrame = Instance.new('ScrollingFrame')
+		notifMainFrame.Parent = NotifScreenUI
+		notifMainFrame.Active = true
+		notifMainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		notifMainFrame.BackgroundTransparency = 1
+		notifMainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		notifMainFrame.BorderSizePixel = 0
+		notifMainFrame.Size = UDim2.new(1, 0, 1, 0)
+		notifMainFrame.CanvasPosition = Vector2.new(240, 0)
+		notifMainFrame.CanvasSize = UDim2.new(1.60000002, 0, 0, 0)
+		notifMainFrame.ScrollBarThickness = 8
+		notifMainFrame.Visible = true
+	end
+elseif not UserInputService.TouchEnabled and UserInputService.KeyboardEnabled and UserInputService.MouseEnabled then
+	if notifMainFrame == nil then
+		notifMainFrame = Instance.new('Frame')
+		notifMainFrame.Parent = NotifScreenUI
+		notifMainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		notifMainFrame.BackgroundTransparency = 1
+		notifMainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		notifMainFrame.Size = UDim2.new(1, 0, 1, 0)
+		notifMainFrame.Visible = true
+	end
+end
+
+local NotifFrame = Instance.new('Frame', notifMainFrame)
+NotifFrame.BackgroundTransparency = 1
+NotifFrame.Position = UDim2.new(0.73, 0,0, 0)
+NotifFrame.Size = UDim2.new(0, 313,0, 615)
+NotifFrame.ZIndex = 2
+
+local uilistLayout_notif = Instance.new('UIListLayout', NotifFrame)
+uilistLayout_notif.FillDirection = Enum.FillDirection.Vertical
+uilistLayout_notif.SortOrder = Enum.SortOrder.LayoutOrder
+uilistLayout_notif.VerticalAlignment = Enum.VerticalAlignment.Bottom
+uilistLayout_notif.HorizontalAlignment = Enum.HorizontalAlignment.Left
+uilistLayout_notif.Padding = UDim.new(0, 8)
+
+function Library:notif(title, desc, duration, imagetype)
+	local notificationFrame = Instance.new('Frame', NotifFrame)
+	notificationFrame:SetAttribute('duration', duration) 
+	notificationFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	notificationFrame.BackgroundTransparency = 0.2
+	notificationFrame.BorderSizePixel = 0
+	notificationFrame.Size = UDim2.new(0,357,0,81)
+
+	local notifUICorner = Instance.new('UICorner', notificationFrame)
+	notifUICorner.CornerRadius = UDim.new(0, 8)
+
+	local durationStart = UDim2.new(0, 0,0, 1)
+	local durationEnd = UDim2.new(0, 357,0, 1)
+
+	local durationLine = Instance.new('Frame', notificationFrame)
+	durationLine.BorderSizePixel = 0
+	durationLine.BackgroundTransparency = 0
+	durationLine.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	durationLine.Position = UDim2.new(0,2,0.97,0)
+	durationLine.Size = durationStart
+
+	local image = Instance.new('ImageLabel', notificationFrame)
+	image.BackgroundTransparency = 1
+	image.Position = UDim2.new(-0.051, 0, -0.223, 0)
+	image.Size = UDim2.new(0,78, 0, 73)
+
+	if imagetype == nil then
+		image.Image = 'rbxassetid://14368324807'
+	elseif string.lower(imagetype) == 'info' or string.lower(imagetype) == 'information' then
+		image.Image = 'rbxassetid://14368324807'
+	elseif string.lower(imagetype) == 'warning' then
+		image.Image = 'rbxassetid://14368361552'
+	elseif string.lower(imagetype) == 'error' then
+		image.Image = 'rbxassetid://14368301329'
+	end
+
+	local titleText = Instance.new('TextLabel', notificationFrame)
+	titleText.BackgroundTransparency = 1
+	titleText.Text = title
+	titleText.Name = 'title'
+	titleText.Position = UDim2.new(0.105,0,0.108,0)
+	titleText.Size = UDim2.new(0, 200,0,18)
+	titleText.FontFace = Font.fromEnum(Enum.Font.Arimo, Enum.FontWeight.Regular)
+	titleText.TextSize = 18
+	titleText.TextColor3 = Color3.fromRGB(255,255,255)
+	titleText.TextXAlignment = Enum.TextXAlignment.Left
+
+	local InformationText = Instance.new('TextLabel', notificationFrame)
+	InformationText.BackgroundTransparency = 1
+	InformationText.Name = 'info'
+	InformationText.Text = desc
+	InformationText.Position = UDim2.new(0.144, 0,0.431, 0)
+	InformationText.Size = UDim2.new(0, 304,0, 28)
+	InformationText.FontFace = Font.fromEnum(Enum.Font.Arimo, Enum.FontWeight.Regular)
+	InformationText.TextSize = 18
+	InformationText.TextColor3 = Color3.fromRGB(200,200,200)
+	InformationText.TextXAlignment = Enum.TextXAlignment.Left
+end
+
+NotifFrame.ChildAdded:Connect(function(notificationFrame)
+	local durationEnd = UDim2.new(0, 357,0, 1)
+	local durationLine = notificationFrame:FindFirstChildOfClass('Frame')
+	local titleText = notificationFrame:WaitForChild('title')
+	local InformationText = notificationFrame:WaitForChild('info')
+	local image = notificationFrame:FindFirstChildOfClass('ImageLabel')
+	TweenService:Create(durationLine,TweenInfo.new(notificationFrame:GetAttribute('duration')), {Size = durationEnd}):Play()
+	task.wait(notificationFrame:GetAttribute('duration'))
+	TweenService:Create(notificationFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(durationLine, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(titleText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+	TweenService:Create(InformationText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+	TweenService:Create(image, TweenInfo.new(0.5), {ImageTransparency = 1}):Play()
+end)
 
 function Library:Uninject()
 	if shared.PinappleScriptLoaded then
@@ -264,93 +399,6 @@ function Library:CreateMain(properties)
 			LibraryTextImage.Image = 'rbxassetid://126819632241697'
 			LibraryTextImage.ImageColor3 = Color3.fromRGB(255,255,255)
 		end
-
-		local NotifFrame = Instance.new('Frame', MainFrame)
-		NotifFrame.BackgroundTransparency = 1
-		NotifFrame.Position = UDim2.new(0.73, 0,0, 0)
-		NotifFrame.Size = UDim2.new(0, 313,0, 615)
-		NotifFrame.ZIndex = 2
-
-		local uilistLayout_notif = Instance.new('UIListLayout', NotifFrame)
-		uilistLayout_notif.FillDirection = Enum.FillDirection.Vertical
-		uilistLayout_notif.SortOrder = Enum.SortOrder.LayoutOrder
-		uilistLayout_notif.VerticalAlignment = Enum.VerticalAlignment.Bottom
-		uilistLayout_notif.HorizontalAlignment = Enum.HorizontalAlignment.Left
-		uilistLayout_notif.Padding = UDim.new(0, 8)
-
-		function Library:notif(title, desc, duration, imagetype)
-			local notificationFrame = Instance.new('Frame', NotifFrame)
-			notificationFrame:SetAttribute('duration', duration) 
-			notificationFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-			notificationFrame.BackgroundTransparency = 0.2
-			notificationFrame.BorderSizePixel = 0
-			notificationFrame.Size = UDim2.new(0,357,0,81)
-
-			local notifUICorner = Instance.new('UICorner', notificationFrame)
-			notifUICorner.CornerRadius = UDim.new(0, 8)
-
-			local durationStart = UDim2.new(0, 0,0, 1)
-			local durationEnd = UDim2.new(0, 357,0, 1)
-
-			local durationLine = Instance.new('Frame', notificationFrame)
-			durationLine.BorderSizePixel = 0
-			durationLine.BackgroundTransparency = 0
-			durationLine.BackgroundColor3 = Color3.fromRGB(255,255,255)
-			durationLine.Position = UDim2.new(0,2,0.97,0)
-			durationLine.Size = durationStart
-
-			local image = Instance.new('ImageLabel', notificationFrame)
-			image.BackgroundTransparency = 1
-			image.Position = UDim2.new(-0.051, 0, -0.223, 0)
-			image.Size = UDim2.new(0,78, 0, 73)
-
-			if imagetype == nil then
-				image.Image = 'rbxassetid://14368324807'
-			elseif string.lower(imagetype) == 'info' or string.lower(imagetype) == 'information' then
-				image.Image = 'rbxassetid://14368324807'
-			elseif string.lower(imagetype) == 'warning' then
-				image.Image = 'rbxassetid://14368361552'
-			elseif string.lower(imagetype) == 'error' then
-				image.Image = 'rbxassetid://14368301329'
-			end
-
-			local titleText = Instance.new('TextLabel', notificationFrame)
-			titleText.BackgroundTransparency = 1
-			titleText.Text = title
-			titleText.Name = 'title'
-			titleText.Position = UDim2.new(0.105,0,0.108,0)
-			titleText.Size = UDim2.new(0, 200,0,18)
-			titleText.FontFace = Font.fromEnum(Enum.Font.Arimo, Enum.FontWeight.Regular)
-			titleText.TextSize = 18
-			titleText.TextColor3 = Color3.fromRGB(255,255,255)
-			titleText.TextXAlignment = Enum.TextXAlignment.Left
-
-			local InformationText = Instance.new('TextLabel', notificationFrame)
-			InformationText.BackgroundTransparency = 1
-			InformationText.Name = 'info'
-			InformationText.Text = desc
-			InformationText.Position = UDim2.new(0.144, 0,0.431, 0)
-			InformationText.Size = UDim2.new(0, 304,0, 28)
-			InformationText.FontFace = Font.fromEnum(Enum.Font.Arimo, Enum.FontWeight.Regular)
-			InformationText.TextSize = 18
-			InformationText.TextColor3 = Color3.fromRGB(200,200,200)
-			InformationText.TextXAlignment = Enum.TextXAlignment.Left
-		end
-
-		NotifFrame.ChildAdded:Connect(function(notificationFrame)
-			local durationEnd = UDim2.new(0, 357,0, 1)
-			local durationLine = notificationFrame:FindFirstChildOfClass('Frame')
-			local titleText = notificationFrame:WaitForChild('title')
-			local InformationText = notificationFrame:WaitForChild('info')
-			local image = notificationFrame:FindFirstChildOfClass('ImageLabel')
-			TweenService:Create(durationLine,TweenInfo.new(notificationFrame:GetAttribute('duration')), {Size = durationEnd}):Play()
-			task.wait(notificationFrame:GetAttribute('duration'))
-			TweenService:Create(notificationFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-			TweenService:Create(durationLine, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-			TweenService:Create(titleText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-			TweenService:Create(InformationText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-			TweenService:Create(image, TweenInfo.new(0.5), {ImageTransparency = 1}):Play()
-		end)
 
 		function Main:CreateTab(PropertiesToggle)
 			local Tabs = {}
