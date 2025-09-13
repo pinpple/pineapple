@@ -1,7 +1,7 @@
 --[[
 
     pineapple 🍍
-    by @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy, @star
+    by @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy, @star, @springs67 (for knit method & table btw)
 
     game: Bedwars 
 	game link: https://www.roblox.com/games/6872265039/BedWars-ALL-KITS-FREE
@@ -62,65 +62,54 @@ do
 end
 
 do
-    bedwars = setmetatable({
-        Knit = require(replicatedStorage.rbxts_include.node_modules['@easy-games'].knit.src.Knit.KnitClient),
-        GetController = function(controller: string): string?
-            if bedwars.Knit.Controllers[controller] then
-                return bedwars.Knit.Controllers[controller]
-            end
-
-            return pineapple:notif('Pineapple', 'Failed to get controller: '..controller, math.random(6, 7), 'warning')
-        end,
-        GetBestWeapon = function(): any?
-            local bestWeaponMeta, bestSword = 0, nil
-
-            for _, v in ipairs(weaponmeta) do
-                local name, meta = v[1], v[2]
-
-                if meta > bestWeaponMeta then
-                    bestWeaponMeta = meta
-                    bestSword = name
-                end
-            end
-
-            return inv:FindFirstChild(bestSword)
-        end,
-        FOVController = bedwars.GetController('FovController'),
-        SwordController = bedwars.GetController('SwordController'),
-        SprintController = bedwars.GetController('SprintController')
-    }, nil)
+    bedwars = {
+        Knit = require(replicatedStorage.rbxts_include.node_modules["@easy-games"].knit.src.Knit.KnitClient),
+    }
+    
+    GetController = function(controller: string): string?
+        if bedwars.Knit.Controllers[controller] then
+            return bedwars.Knit.Controllers[controller]
+        end
+        return pineapple:notif('Pineapple', 'Failed to get controller: '..controller, math.random(6, 7), 'warning')
+    end
+    
+    bedwars.Controllers = {
+        FOV = GetController('FovController'),
+        Sprint = GetController('SprintController'),
+        Melee = GetController('SwordController')
+    }
 end
 
-local MainUI = pineapple:CreateMain()
+local Main = pineapple:CreateMain()
 
 local tabs = {
-    Combat = MainUI:CreateTab({
-        Text = 'Combat',
+    Combat = Main:CreateTab({
+        Name = 'Combat',
         Icon = 'rbxassetid://138185990548352',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Exploit = MainUI:CreateTab({
-        Text = 'Exploit',
+    Exploit = Main:CreateTab({
+        Name = 'Exploit',
         Icon = 'rbxassetid://71954798465945',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Move = MainUI:CreateTab({
-        Text = 'Move',
+    Move = Main:CreateTab({
+        Name = 'Move',
         Icon = 'rbxassetid://91366694317593',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Player = MainUI:CreateTab({
-        Text = 'Player',
+    Player = Main:CreateTab({
+        Name = 'Player',
         Icon = 'rbxassetid://103157697311305',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    Visual = MainUI:CreateTab({
-        Text = 'Visual',
+    Visual = Main:CreateTab({
+        Name = 'Visual',
         Icon = 'rbxassetid://118420030502964',
         ImageColor = Color3.fromRGB(255, 255, 255)
     }),
-    World = MainUI:CreateTab({
-        Text = 'World',
+    World = Main:CreateTab({
+        Name = 'World',
         Icon = 'rbxassetid://76313147188124',
         ImageColor = Color3.fromRGB(255, 255, 255)
     })
@@ -143,6 +132,28 @@ do
         ToolTipText = 'Increases your speed'
     })
 end
+
+--[[do
+    local Killaura
+    Killaura = pineapple:CreateToggle({
+        Name = 'Killaura',
+        Function = function(callback)
+            if callback then
+                repeat
+                    task.wait()
+                until not callback
+            end
+        end,
+        ToolTipText = 'Attacks enemies around you'
+    })
+end]]
+
+--[[do
+    local Killaura
+    Killaura = Pineapple:CreateToggle({
+
+    })
+end]]
 
 do
     local Uninject
