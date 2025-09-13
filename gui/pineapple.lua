@@ -12,6 +12,18 @@ local Library = {
 			Tag = 'sus',
 			Color = Color3.fromRGB(60, 0, 255),
 		},
+		[1376949375] = {
+			Allowed = true,
+			Blacklisted = false,
+			Tag = 'Owner',
+			Color = Color3.fromRGB(60, 0, 255),
+		},
+		[9463963460] = {
+			Allowed = true,
+			Blacklisted = false,
+			Tag = 'Owner',
+			Color = Color3.fromRGB(60, 0, 255),
+		},
 	},
 }
 
