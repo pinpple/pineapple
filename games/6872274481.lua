@@ -91,7 +91,11 @@ do
     }, nil)
 end
 
-pineapple:CreateMain()
+pineapple:CreateMain({
+    textCharacters = 10,
+    Toggle = "RightShift",
+    MainTextColor = Color3.fromRGB(255, 255, 10)
+})
 
 local tabs = {
     Combat = pineapple:CreateTab({
