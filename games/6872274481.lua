@@ -157,8 +157,6 @@ do
     })
 end
 
-do
-
 --[[do
     local Killaura
     Killaura = pineapple:CreateToggle({
