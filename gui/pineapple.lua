@@ -534,7 +534,7 @@ function Library:CreateMain(properties)
 				DropdownButton.Size = UDim2.new(0,20,0,20)
 				DropdownButton.ZIndex = 2
 				DropdownButton.FontFace = Font.fromEnum(Enum.Font.SourceSans, Enum.FontWeight.Regular)
-				DropdownButton.Text = '>'
+				DropdownButton.Text = 'Λ'
 				DropdownButton.TextColor3 = Color3.fromRGB(255,255,255)
 				DropdownButton.TextScaled = true
 				DropdownButton.TextWrapped = true
