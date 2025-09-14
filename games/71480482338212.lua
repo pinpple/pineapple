@@ -10,7 +10,6 @@
 ]]
 
 local Pineapple = loadstring(readfile('pineapple/gui/pineapple.lua'))()
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/pinpple/pineapple/refs/heads/main/gui/pineapple.lua"))()
 
 local MainUI = Library:CreateMain({
 	TextCharacters = 10,
@@ -18,16 +17,22 @@ local MainUI = Library:CreateMain({
 	
 })
 
-local tab1 = Library:CreateTab({
-	Text = "Tab1",
+local Combat = MainUI:CreateTab({
+	Text = "Combat",
 	Image = "rbxassetid://0",
 	ImageColor = Color3.fromRGB(0,0,0)
 })
 
-local toggle1 = tab1:CreateToggle({
-	Name = "Name of the toggle",
-	ToolTipText = "Tool Tip Text of the toggle",
-	Keybind = "The keybind Default: None",
+local Blatant = MainUI:CreateTab({
+	Text = "Blatant",
+	Image = "rbxassetid://0",
+	ImageColor = Color3.fromRGB(0,0,0)
+})
+
+local Uninject = Blatant:CreateToggle({
+	Name = "Uninject",
+	ToolTipText = "Removes pineapple from the client.",
+	Keybind = "None",
 	Enabled = true,
 	AutoDisable = false,
 	AutoEnable = false,
