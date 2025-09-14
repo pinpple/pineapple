@@ -1,8 +1,9 @@
 
+
 --[[
 
     pineapple 🍍
-    by @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy, @star
+    by @stav, @sus, @vxrm, @DaiPlayz, @cqrzy, @star
 
     game: Bedwarz 3
 	game link: https://www.roblox.com/games/71480482338212/BedwarZ#!/about
@@ -10,9 +11,8 @@
 ]]
 
 local Pineapple = loadstring(readfile('pineapple/gui/pineapple.lua'))()
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GamingChairV4/pineapple/refs/heads/main/gui/pineapple.lua"))()
 
-local MainUI = Library:CreateMain({
+local MainUI = Pineapple:CreateMain({
     TextCharacters = 67,
     Toggle = "RightShift",
 
@@ -31,8 +31,8 @@ local Combat = MainUI:CreateTab({
     Position = UDim2.new(0, 10, 0, 60) -- offset by 50 pixels on Y axis
 })
 
-Library:notif("Pineapple","Executed properly!", 3, "info")
-Library:notif("Pineapple","This script is in BETA & some functions are broken.", 15, "info")
+Pineapple:notif("Pineapple","Executed properly!", 3, "info")
+Pineapple:notif("Pineapple","This script is in BETA & some functions are broken.", 15, "info")
 
 local Uninject = Utility:CreateToggle({
     Name = "Uninject",
@@ -45,17 +45,18 @@ local Uninject = Utility:CreateToggle({
     Callback = function(callback)
     if callback then
     print("Active")
-        Library:notif("Pineapple","Processing your  uninject...", 3, "warning")
+        Pineapple:notif("Pineapple","Processing your  uninject...", 3, "warning")
         task.wait(1.5)
-        Library:notif("Pineapple","Saving all your data", 1, "info")
+        Pineapple:notif("Pineapple","Saving all your data", 1, "info")
         task.wait(4)
-        Library:Uninject()
+        Pineapple:Uninject()
     else
-        Library:notif("Pineapple","Removed pineapple from the client.", 3, "info")
+        Pineapple:notif("Pineapple","Removed pineapple from the client.", 3, "info")
         end
     end,
 })
 
+--// BedWars 3 Killaura (Toggle, Ignores Teammates, No Face Target)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -65,6 +66,7 @@ local SwordHit = Remotes:WaitForChild("SwordHit")
 
 local validSwords = {"Wooden Sword", "Stone Sword", "Iron Sword", "Diamond Sword", "Emerald Sword"}
 
+-- Finds sword in inventory
 local function getSword()
     local inv = LocalPlayer:FindFirstChild("Inventory")
     if inv then
@@ -77,8 +79,10 @@ local function getSword()
     return nil
 end
 
+-- Control flag
 local KillauraEnabled = false
 
+-- Toggle
 local KillauraToggle = Utility:CreateToggle({
     Name = "Killaura",
     ToolTipText = "Automatically attack players within 18 studs (360°)",
@@ -90,13 +94,14 @@ local KillauraToggle = Utility:CreateToggle({
     Callback = function(callback)
         KillauraEnabled = callback
         if KillauraEnabled then
-            Library:notif("Pineapple", "Killaura activated.", 3, "info")
+            Pineapple:notif("Pineapple", "Killaura activated.", 3, "info")
         else
-            Library:notif("Pineapple", "Killaura deactivated.", 3, "info")
+            Pineapple:notif("Pineapple", "Killaura deactivated.", 3, "info")
         end
     end,
 })
 
+-- Spam loop
 task.spawn(function()
     while task.wait(0.1) do
         if KillauraEnabled then
@@ -119,46 +124,65 @@ task.spawn(function()
     end
 end)
 
+
+--// BedWars 3 Scaffold (Toggle, Grid Snapped, Team Wool)
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PlaceRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("ItemsRemotes"):WaitForChild("PlaceBlock")
+
+local LocalPlayer = Players.LocalPlayer
 local ScaffoldEnabled = false
 
+-- detect wool type from team
+local function getWoolType()
+    if LocalPlayer.Team then
+        return LocalPlayer.Team.Name .. " Wool"
+    end
+    return "Wool"
+end
+
+-- toggle UI
 local ScaffoldToggle = Utility:CreateToggle({
     Name = "Scaffold",
-    ToolTipText = "Automatically places blocks in front of you.",
+    ToolTipText = "by @vxrm",
     Keybind = "None",
     Enabled = false,
-    AutoDisable = false,
-    AutoEnable = false,
-    Hide = false,
     Callback = function(callback)
         ScaffoldEnabled = callback
         if ScaffoldEnabled then
-            Library:notif("Pineapple", "Scaffold activated.", 3, "info")
+            Pineapple:notif("Pineapple","Scaffold activated.",3,"info")
         else
-            Library:notif("Pineapple", "Scaffold deactivated.", 3, "info")
+            Pineapple:notif("Pineapple","Scaffold deactivated.",3,"info")
         end
     end,
 })
 
--- Scaffold loop
+-- placement loop
 task.spawn(function()
-    while task.wait(0.001) do
-        if ScaffoldEnabled then
-            local char = LocalPlayer.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local teamColor = LocalPlayer.Team and LocalPlayer.Team.Name or "Blue"
-                local woolType = teamColor .. " Wool" 
+    while task.wait(0.05) do
+        if ScaffoldEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = LocalPlayer.Character.HumanoidRootPart
+            local forward = hrp.CFrame.LookVector
 
-                local forward = hrp.CFrame.LookVector
-                local placePos = hrp.Position + forward * 3 
+            -- place block slightly in front & below
+            local blockPos = (hrp.Position + forward * 2) - Vector3.new(0, 3, 0)
 
-                local args = {woolType, 73, Vector3.new(placePos.X, placePos.Y - 1, placePos.Z)}
-                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ItemsRemotes"):WaitForChild("PlaceBlock"):FireServer(unpack(args))
-            end
+            -- snap to Roblox block grid
+            blockPos = Vector3.new(
+                math.floor(blockPos.X + 0.5),
+                math.floor(blockPos.Y + 0.5),
+                math.floor(blockPos.Z + 0.5)
+            )
+
+            local args = {
+                getWoolType(),
+                73, -- block ID
+                blockPos
+            }
+            PlaceRemote:FireServer(unpack(args))
         end
     end
 end)
-
 
 --[[
 
@@ -176,3 +200,6 @@ end)
     pineapple overall: @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy
 
 ]]
+
+
+
