@@ -1,5 +1,3 @@
-
-
 --[[
 
     pineapple 🍍
@@ -10,7 +8,7 @@
 	status: 🟢
 ]]
 
-local Pineapple = loadstring(readfile('pineapple/gui/pineapple.lua'))()
+--[[local Pineapple = loadstring(readfile('pineapple/gui/pineapple.lua'))()
 
 local MainUI = Pineapple:CreateMain({
     TextCharacters = 67,
@@ -182,10 +180,9 @@ task.spawn(function()
             PlaceRemote:FireServer(unpack(args))
         end
     end
-end)
+end)]]
 
 --[[
-
     specific credits @ 🍍
     
     killaura: @stingray, @spring67
@@ -198,8 +195,4 @@ end)
     pineapple name: @stingray
     pineapple idea: @everyone
     pineapple overall: @stav, @sus, @GamingChairV4, @DaiPlayz, @cqrzy
-
 ]]
-
-
-
