@@ -8,184 +8,171 @@
 	status: 🟢
 ]]
 
-local Pineapple = loadstring(readfile('pineapple/gui/pineapple.lua'))()
+local cloneref = cloneref or function(obj: Instance): any?
+    return obj
+end
 
-local MainUI = Pineapple:CreateMain({
+local playersService = cloneref(game:GetService('Players'))
+local replicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
+local runService = cloneref(game:GetService('RunService'))
+local lplr = playersService.LocalPlayer
+
+local entitylib = loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/refs/heads/main/libraries/entity.lua'))()
+local pineapple, items = loadstring(readfile('pineapple/gui/pineapple.lua'))(), {}
+
+local MainUI = pineapple:CreateMain({
     TextCharacters = 67,
-    Toggle = "RightShift",
-
+    Toggle = 'RightShift'
 })
 
 local Utility = MainUI:CreateTab({
-    Text = "Utility",
-    Image = "rbxassetid://138185990548352",
+    Text = 'Utility',
+    Image = 'rbxassetid://138185990548352',
     ImageColor = Color3.fromRGB(0,0,0)
 })
 
 local Combat = MainUI:CreateTab({
-    Text = "Combat",
-    Image = "rbxassetid://138185990548352", -- change to whatever image you want
-    ImageColor = Color3.fromRGB(255,0,0),
-    Position = UDim2.new(0, 10, 0, 60) -- offset by 50 pixels on Y axis
+    Text = 'Combat',
+    Image = 'rbxassetid://138185990548352',
+    ImageColor = Color3.fromRGB(255, 0, 0),
+    Position = UDim2.new(0, 10, 0, 60)
 })
 
-Pineapple:notif("Pineapple","Executed properly!", 3, "info")
-Pineapple:notif("Pineapple","This script is in BETA & some functions are broken.", 15, "info")
+do
+    items = {
+        Melee = {'Wooden Sword', 'Stone Sword', 'Iron Sword', 'Diamond Sword', 'Emerald Sword'},
+        Pickaxes = {'Wooden Pickaxe', 'Stone Pickaxe', 'Iron Pickaxe', 'Diamond Pickaxe'}
+    }
+end
 
-local Uninject = Utility:CreateToggle({
-    Name = "Uninject",
-    ToolTipText = "Uninject pineapple from your client.",
-    Keybind = "None",
-    Enabled = false,
-    AutoDisable = false,
-    AutoEnable = false,
-    Hide = false,
-    Callback = function(callback)
-    if callback then
-    print("Active")
-        Pineapple:notif("Pineapple","Processing your  uninject...", 3, "warning")
-        task.wait(1.5)
-        Pineapple:notif("Pineapple","Saving all your data", 1, "info")
-        task.wait(4)
-        Pineapple:Uninject()
-    else
-        Pineapple:notif("Pineapple","Removed pineapple from the client.", 3, "info")
-        end
-    end,
-})
+local function hasTool(v)
+    return lplr.Backpack and lplr.Backpack:FindFirstChild(v)
+end
 
---// BedWars 3 Killaura (Toggle, Ignores Teammates, No Face Target)
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local function getTool(tool: string): string?
+	return workspace.PlayersContainer[lplr.Name]:FindFirstChild(tool)
+end
 
-local LocalPlayer = Players.LocalPlayer
-local Remotes = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("ItemsRemotes")
-local SwordHit = Remotes:WaitForChild("SwordHit")
+local function getItem(type, returnval)
+    local tog = {}
+    if not returnval then
+        error('No return value')
+    end
 
-local validSwords = {"Wooden Sword", "Stone Sword", "Iron Sword", "Diamond Sword", "Emerald Sword"}
-
--- Finds sword in inventory
-local function getSword()
-    local inv = LocalPlayer:FindFirstChild("Inventory")
-    if inv then
-        for _, item in ipairs(inv:GetChildren()) do
-            if table.find(validSwords, item.Name) then
-                return item.Name
+    for i, v in items[type] do
+        local tool = getTool(v)
+        if entitylib.isAlive then
+            if returnval == 'tog' and tool then
+                return true
+            elseif returnval == 'table' and (hasTool(v) or tool) then
+                tog[i] = v
             end
         end
     end
-    return nil
+
+    if returnval == 'tog' then
+        return false
+    end
+
+    return tog
 end
 
--- Control flag
-local KillauraEnabled = false
+do
+    local Killaura
+    local AttackDelay = tick()
 
--- Toggle
-local KillauraToggle = Utility:CreateToggle({
-    Name = "Killaura",
-    ToolTipText = "Automatically attack players within 18 studs (360°)",
-    Keybind = "None",
-    Enabled = false,
-    AutoDisable = false,
-    AutoEnable = false,
-    Hide = false,
-    Callback = function(callback)
-        KillauraEnabled = callback
-        if KillauraEnabled then
-            Pineapple:notif("Pineapple", "Killaura activated.", 3, "info")
-        else
-            Pineapple:notif("Pineapple", "Killaura deactivated.", 3, "info")
-        end
-    end,
-})
+    Killaura = Utility:CreateToggle({
+        Name = "Killaura",
+        ToolTipText = 'Automatically attacks players around you',
+        Callback = function(callback)
+            if callback then
+                repeat
+                    local plrs = entitylib.AllPosition({
+                        Range = 18,
+                        Wallcheck = false,
+                        Part = 'RootPart',
+                        Players = true,
+                        NPCs = true,
+                        Limit = 10
+                    })
 
--- Spam loop
-task.spawn(function()
-    while task.wait(0.1) do
-        if KillauraEnabled then
-            local char = LocalPlayer.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local sword = getSword()
-                if sword then
-                    for _, plr in ipairs(Players:GetPlayers()) do
-                        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                            local dist = (hrp.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                            if dist <= 18 then
-                                SwordHit:FireServer(sword, plr.Character)
+                    if #plrs > 0 then
+                        for _, v in plrs do 
+                            for _, i in getItem('Melee', 'table') do
+                                if AttackDelay < tick() then
+                                    AttackDelay = tick() + 0.001
+
+                                    replicatedStorage.Remotes.ItemsRemotes.SwordHit:FireServer(i, v.Character)
+                                end
                             end
                         end
                     end
+
+                    task.wait()
+                until not callback
+            end
+        end,
+    })
+end
+
+do
+    local Scaffold, BuildCon
+
+    local roundPos = function(pos)
+        return Vector3.new(math.floor(pos.X + 0.5), math.floor(pos.Y + 0.5), math.floor(pos.Z + 0.5))
+    end
+
+    local function getWoolType()
+        if lplr.Team ~= 'Spectator' then
+            return lplr.Team.Name..'Wool'
+        end
+
+        return 'Wool'
+    end
+
+    Scaffold = Combat:CreateToggle({
+        Name = 'Scaffold',
+        ToolTipText = 'Automatically bridges for you',
+        Callback = function(callback)
+            if callback then
+                BuildCon = runService.RenderStepped:Connect(function()
+                    if entitylib.isAlive then
+                        local lookVec = entitylib.character.RootPart.CFrame.LookVector
+                        local blockPos = roundPos((entitylib.character.RootPart.Position + lookVec * 2) - Vector3.new(0, 3, 0))
+
+                        replicatedStorage.Remotes.ItemsRemotes.PlaceBlock:FireServer(getWoolType(), 73, blockPos)
+                    end
+                end)
+            else
+                if BuildCon then
+                    BuildCon:Disconnect()
+                    BuildCon = nil
                 end
             end
         end
-    end
-end)
-
-
---// BedWars 3 Scaffold (Toggle, Grid Snapped, Team Wool)
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local PlaceRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("ItemsRemotes"):WaitForChild("PlaceBlock")
-
-local LocalPlayer = Players.LocalPlayer
-local ScaffoldEnabled = false
-
--- detect wool type from team
-local function getWoolType()
-    if LocalPlayer.Team then
-        return LocalPlayer.Team.Name .. " Wool"
-    end
-    return "Wool"
+    })
 end
 
--- toggle UI
-local ScaffoldToggle = Utility:CreateToggle({
-    Name = "Scaffold",
-    ToolTipText = "by @vxrm",
-    Keybind = "None",
-    Enabled = false,
-    Callback = function(callback)
-        ScaffoldEnabled = callback
-        if ScaffoldEnabled then
-            Pineapple:notif("Pineapple","Scaffold activated.",3,"info")
-        else
-            Pineapple:notif("Pineapple","Scaffold deactivated.",3,"info")
+do
+    local Uninject
+    Uninject = Utility:CreateToggle({
+        Name = 'Uninject',
+        ToolTipText = 'Uninjects Pineapple',
+        Callback = function(callback)
+            if callback then
+                pineapple:Uninject()
+            end
         end
-    end,
-})
+    })
+end
 
--- placement loop
-task.spawn(function()
-    while task.wait(0.05) do
-        if ScaffoldEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local hrp = LocalPlayer.Character.HumanoidRootPart
-            local forward = hrp.CFrame.LookVector
-
-            -- place block slightly in front & below
-            local blockPos = (hrp.Position + forward * 2) - Vector3.new(0, 3, 0)
-
-            -- snap to Roblox block grid
-            blockPos = Vector3.new(
-                math.floor(blockPos.X + 0.5),
-                math.floor(blockPos.Y + 0.5),
-                math.floor(blockPos.Z + 0.5)
-            )
-
-            local args = {
-                getWoolType(),
-                73, -- block ID
-                blockPos
-            }
-            PlaceRemote:FireServer(unpack(args))
-        end
-    end
-end)
+pineapple:notif('Pineapple', 'rewrite loaded (fuck u whoever wrote that shit code)', 6)
 
 --[[
     specific credits @ 🍍
     
-    killaura: @stingray, @spring67
+    rewrite: @stav
+    killaura: @stingray, @spring67, @stav
     scaffold: @stingray
     gui: @star
     updates & maintenance: @everyone
