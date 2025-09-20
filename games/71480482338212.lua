@@ -15,6 +15,7 @@ end
 local playersService = cloneref(game:GetService('Players'))
 local replicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local runService = cloneref(game:GetService('RunService'))
+local UserInputService = cloneref(game:GetService('UserInputService'))
 local lplr = playersService.LocalPlayer
 
 local entitylib = loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/refs/heads/main/libraries/entity.lua'))()
@@ -37,6 +38,14 @@ end
 
 local function getTool(tool: string): string?
 	return workspace.PlayersContainer[lplr.Name]:FindFirstChild(tool)
+end
+
+local function getCurrentTool()
+	if workspace[lplr.Name] and workspace[lplr.Name]:FindFirstChildOfClass('Tool') then
+		return workspace[lplr.Name]:FindFirstChildOfClass('Tool')
+	else
+		return nil
+	end
 end
 
 local function getItem(type, returnval)
@@ -138,6 +147,39 @@ do
 		end
 	})
 end
+
+do
+	local AutoClicker
+	local CPSSlider, CPS
+
+	AutoClicker = Combat:CreateModule({
+		Name = 'Autoclicker',
+		ToolTip = 'Automatically clicks',
+		Callback = function(callback)
+			if callback then
+				repeat
+					local tool = getCurrentTool()
+					if tool and UserInputService:IsMouseButtonPressed(0) then
+						tool:Activate()
+					end
+					runService.RenderStepped:Wait(.3 / CPS)
+				until not callback
+			end
+		end
+	})
+
+	CPSSlider = AutoClicker:CreateSlider({
+		Name = "CPS",
+		Min = 1,
+		Max = 20,
+		Default = 8,
+		Callback = function(callback)
+			CPS = callback
+		end,
+	})
+end
+
+
 
 do
 	local Uninject
