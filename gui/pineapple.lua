@@ -336,11 +336,7 @@ else
 			writefile(GameConfig, HttpService:JSONEncode(Config))
 		end
 	end)
-
-	game:BindToClose(function()
-		writefile(GameConfig, HttpService:JSONEncode(Config))
-	end)
-
+	
 	spawn(function()
 		RunService.RenderStepped:Connect(function()
 			if ScreenGui then
