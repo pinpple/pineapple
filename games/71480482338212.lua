@@ -20,10 +20,13 @@ local lplr = playersService.LocalPlayer
 
 local entitylib = loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/refs/heads/main/libraries/entity.lua'))()
 local pineapple, items = loadstring(readfile('pineapple/gui/pineapple.lua'))(), {}
+local esplib = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MSESP/refs/heads/main/source.luau"))()
 
 local Utility = pineapple:CreateTab('Utility')
 
 local Combat = pineapple:CreateTab('Combat')
+
+local Visual = pineapple:CreateTab('Visual')
 
 do
 	items = {
@@ -177,6 +180,69 @@ do
 			CPS = callback
 		end,
 	})
+end
+
+do
+	local Esp, Callback
+	
+	function playerAdded(player: Player, callback: BoolValue)
+		if not callback then return end
+		if player == playersService.LocalPlayer then return end
+
+		local ESPElement
+		local function onCharAdded(character)
+			character:WaitForChild("HumanoidRootPart", math.huge)
+
+			ESPElement = esplib:Add({
+				Name = player.Name,
+
+				Model = character,
+
+				Color = player.TeamColor,
+				MaxDistance = 1000,
+
+				TextSize = 17,
+
+				ESPType = "Highlight",
+
+				FillColor = player.TeamColor,
+				OutlineColor = player.TeamColor,
+				FillTransparency = 0.5,
+				OutlineTransparency = 0,
+
+				Tracer = { 
+					Enabled = true,
+					Color = player.TeamColor,
+					From = "Mouse"
+				},
+
+				Arrow = {
+					Enabled = true,
+					Color = player.TeamColor
+				}
+			})
+		end
+
+		onCharAdded(player.Character or player.CharacterAdded:Wait())
+		player.CharacterAdded:Connect(onCharAdded)
+	end
+
+	Esp = Visual:CreateModule({
+		Name = 'Esp',
+		ToolTip = 'View players from anywhere',
+		Callback = function(callback)
+			if callback then
+				Callback = callback
+				for _, player in pairs(playersService:GetPlayers()) do
+					playerAdded(player, callback)
+				end
+			end
+		end
+	})
+
+	playersService.PlayerAdded:Connect(function(player)
+		playerAdded(player, Callback)
+	end)
 end
 
 
