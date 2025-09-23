@@ -1,4 +1,5 @@
 --[[
+
     pineapple 🍍
     by @stav, @sus, @vxrm, @DaiPlayz, @cqrzy, @star
 
@@ -17,15 +18,6 @@ local runService = cloneref(game:GetService('RunService'))
 local UserInputService = cloneref(game:GetService('UserInputService'))
 local lplr = playersService.LocalPlayer
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Character = lplr.Character or lplr.CharacterAdded:Wait()
-local Root = Character:WaitForChild("HumanoidRootPart")
-local SwordHit = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("ItemsRemotes"):WaitForChild("SwordHit")
-local SwordModule = require(ReplicatedStorage:WaitForChild("ToolHandlers"):WaitForChild("Sword"))
-local AnimationsUtils = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("AnimationsUtils"))
-local ViewModelHandler = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("ViewModelHandler"))
-local SwordsData = require(ReplicatedStorage.Modules.DataModules.SwordsData)
-
 local entitylib = loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/refs/heads/main/libraries/entity.lua'))()
 local pineapple, items = loadstring(readfile('pineapple/gui/pineapple.lua'))(), {}
 local esplib = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MSESP/refs/heads/main/source.luau"))()
@@ -42,11 +34,6 @@ do
 		Pickaxes = {'Wooden Pickaxe', 'Stone Pickaxe', 'Iron Pickaxe', 'Diamond Pickaxe'}
 	}
 end
-
-local toolName = items['Melee']
-local tool = Character:FindFirstChild(toolName)
-local swordObj = SwordModule.new(tool, Character)
-local swingAnim = (swordObj.Data.Animations and swordObj.Data.Animations.Swing) or SwordsData.DefaultAnimation.Swing
 
 local function hasTool(v)
 	return lplr.Backpack and lplr.Backpack:FindFirstChild(v)
@@ -70,7 +57,7 @@ local function getItem(type, returnval)
 		error('No return value')
 	end
 
-	for i, v in items[type] do
+	for i, v in items[type] do 
 		local tool = getTool(v)
 		if entitylib.isAlive then
 			if returnval == 'tog' and tool then
@@ -88,6 +75,31 @@ local function getItem(type, returnval)
 	return tog
 end
 
+local function getMelee()
+	local backpack = lplr.Backpack
+	local character = workspace[lplr.Name] -- PlayersContainer
+
+	for _, tool in pairs(backpack:GetChildren()) do
+		if tool:IsA('Tool') then
+			if items['Melee'] then
+				if table.find(items['Melee'], tool.Name) then
+					return tool
+				end
+			end
+		end
+	end
+
+	for _, tool in pairs(character:GetChildren()) do
+		if tool:IsA('Tool') then
+			if items['Melee'] then
+				if table.find(items['Melee'], tool.Name) then
+					return tool
+				end
+			end
+		end
+	end
+end
+
 do
 	local Killaura
 	local AttackDelay = tick()
@@ -98,38 +110,29 @@ do
 		Callback = function(callback)
 			if callback then
 				repeat
-					local found = false
-					for _, plr in pairs(playersService:GetPlayers()) do
-						if plr ~= lplr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-							local hrp = plr.Character.HumanoidRootPart
-							if (hrp.Position - Root.Position).Magnitude <= 18 then
-								found = true
-								break
-							end
-						end
-					end
+					local plrs = entitylib.AllPosition({
+						Range = 18,
+						Wallcheck = false,
+						Part = 'RootPart',
+						Players = true,
+						NPCs = true,
+						Limit = 10
+					})
 
-					if found then
-						local animTrack = swordObj.Animator:LoadAnimation(swingAnim.Animation)
-						local vmTrack = ViewModelHandler.LoadAnimation(swingAnim.ViewModel)
-						AnimationsUtils.BlendAnimation("Animation", animTrack)
-						AnimationsUtils.BlendAnimation("ViewModel", vmTrack)
-						animTrack:Play()
-						vmTrack:Play()
+					if #plrs > 0 then
+						for _, v in plrs do 
+							local melee = getMelee()
+							if melee then
+								if AttackDelay < tick() then
+									AttackDelay = tick() + 0.001
 
-						for _, plr in pairs(playersService:GetPlayers()) do
-							if plr ~= lplr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-								local hrp = plr.Character.HumanoidRootPart
-								if (hrp.Position - Root.Position).Magnitude <= 18 then
-									SwordHit:FireServer(toolName, plr.Character)
+									replicatedStorage.Remotes.ItemsRemotes.SwordHit:FireServer(melee.Name, v.Character)
 								end
 							end
 						end
-
-						task.wait(animTrack.Length or 0.25)
-					else
-						task.wait()
 					end
+
+					task.wait()
 				until not callback
 			end
 		end,
@@ -259,6 +262,8 @@ do
 				for _, player in pairs(playersService:GetPlayers()) do
 					playerAdded(player, callback)
 				end
+			else
+				esplib:Clear()
 			end
 		end
 	})
