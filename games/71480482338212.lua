@@ -24,7 +24,6 @@ local pineapple, items = loadstring(readfile('pineapple/gui/pineapple.lua'))(), 
 local esplib = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MSESP/refs/heads/main/source.luau"))()
 
 local Combat = pineapple:CreateTab('Combat')
-local Player = pineapple:CreateTab('Player')
 local Movement = pineapple:CreateTab('Movement')
 local Visuals = pineapple:CreateTab('Visuals')
 local World = pineapple:CreateTab('World')
