@@ -17,16 +17,23 @@ local replicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local runService = cloneref(game:GetService('RunService'))
 local UserInputService = cloneref(game:GetService('UserInputService'))
 local lplr = playersService.LocalPlayer
+local CurrentCamera = workspace.CurrentCamera
 
 local entitylib = loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/refs/heads/main/libraries/entity.lua'))()
 local pineapple, items = loadstring(readfile('pineapple/gui/pineapple.lua'))(), {}
 local esplib = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MSESP/refs/heads/main/source.luau"))()
 
-local Utility = pineapple:CreateTab('Utility')
-
 local Combat = pineapple:CreateTab('Combat')
+local Player = pineapple:CreateTab('Player')
+local Movement = pineapple:CreateTab('Movement')
+local Visuals = pineapple:CreateTab('Visuals')
+local World = pineapple:CreateTab('World')
+local Exploit = pineapple:CreateTab('Exploit')
+local MathUtils = nil
 
-local Visual = pineapple:CreateTab('Visual')
+if require then
+	MathUtils = require(replicatedStorage.Modules.MathUtils)
+end
 
 do
 	items = {
@@ -75,9 +82,34 @@ local function getItem(type, returnval)
 	return tog
 end
 
+local function getPickaxe()
+	local backpack = lplr.Backpack
+	local character = workspace['PlayersContainer'][lplr.Name] -- PlayersContainer
+
+	for _, tool in pairs(backpack:GetChildren()) do
+		if tool:IsA('Tool') then
+			if items['Pickaxes'] then
+				if table.find(items['Pickaxes'], tool.Name) then
+					return tool
+				end
+			end
+		end
+	end
+
+	for _, tool in pairs(character:GetChildren()) do
+		if tool:IsA('Tool') then
+			if items['Pickaxes'] then
+				if table.find(items['Pickaxes'], tool.Name) then
+					return tool
+				end
+			end
+		end
+	end
+end
+
 local function getMelee()
 	local backpack = lplr.Backpack
-	local character = workspace[lplr.Name] -- PlayersContainer
+	local character = workspace['PlayersContainer'][lplr.Name] -- PlayersContainer
 
 	for _, tool in pairs(backpack:GetChildren()) do
 		if tool:IsA('Tool') then
@@ -104,7 +136,7 @@ do
 	local Killaura
 	local AttackDelay = tick()
 
-	Killaura = Utility:CreateModule({
+	Killaura = Combat:CreateModule({
 		Name = "Killaura",
 		ToolTip = 'Automatically attacks players around you',
 		Callback = function(callback)
@@ -253,7 +285,7 @@ do
 		player.CharacterAdded:Connect(onCharAdded)
 	end
 
-	Esp = Visual:CreateModule({
+	Esp = Visuals:CreateModule({
 		Name = 'Esp',
 		ToolTip = 'View players from anywhere',
 		Callback = function(callback)
@@ -273,11 +305,91 @@ do
 	end)
 end
 
+do
+	local Nuker, Range = nil, 30
+	local RangeSlider
 
+	local function getNearestBed()
+		for i, v in workspace.BedsContainer:GetChildren() do
+			local rangePart = v:FindFirstChild("BedHitbox")
+
+			if rangePart then
+				local Distance =  (lplr.Character.HumanoidRootPart.Position - rangePart.Position).Magnitude
+
+				if Distance <= Range then
+					return v, rangePart
+				end
+			end
+		end
+		return 0
+	end
+	local BreakerRaycastPramas = RaycastParams.new()
+	BreakerRaycastPramas.FilterDescendantsInstances = {workspace.BedsContainer}
+	BreakerRaycastPramas.FilterType = Enum.RaycastFilterType.Include
+
+	Nuker = Exploit:CreateModule({
+		Name = 'Nuker',
+		ToolTip = 'Mine Beds',
+		Callback = function(callback)
+			if callback then
+				local Bed, Distance = getNearestBed()
+				local Pickaxe = getPickaxe()
+
+				if Bed and Pickaxe and lplr.Character and lplr.Character.PrimaryPart then
+					local CameraPos = CurrentCamera:WorldToViewportPoint(Bed.Position)
+					local Viewport = CurrentCamera:ViewportPointToRay(CameraPos.X, CameraPos.Y)
+					local raycast = workspace:Raycast(Viewport.Origin, Viewport.Direction * 18, BreakerRaycastPramas)
+					local blockPositon = MathUtils.Snap(raycast.Position - raycast.Normal * 1.5, 3)
+
+					local Origin = blockPositon + Vector3.new(0, 5, 0)
+					local Direction = (blockPositon - Origin).Unit
+
+					replicatedStorage.Remotes.ItemsRemotes.MineBlock:FireServer(
+						Pickaxe.Name,
+						Bed.Parent,
+						blockPositon,
+						Origin,
+						Direction
+					)
+				end
+			end
+		end,
+	})
+	RangeSlider = Nuker:CreateSlider({
+		Name = "Range",
+		Min = 3,
+		Max = 35,
+		Default = 30,
+		Callback = function(callback)
+			Range = callback
+		end,
+	})
+end
+
+do
+	local SessionInfo
+	local SessionInfothing
+	SessionInfo = Visuals:CreateModule({
+		Name = 'SessionInfo',
+		ToolTip = 'View your stats',
+		Callback = function(callback)
+			if callback then
+				local BedsBroken = lplr.Stats['Total Beds Broken']
+				local Kills = lplr.leaderstats.Kills
+				local Wins = lplr.Stats.Wins
+				SessionInfothing = pineapple:SessionInfo(Kills, Wins, BedsBroken)
+			else
+				if SessionInfothing then
+					SessionInfothing:Remove()
+				end
+			end
+		end,
+	})
+end
 
 do
 	local Uninject
-	Uninject = Utility:CreateModule({
+	Uninject = Visuals:CreateModule({
 		Name = 'Uninject',
 		ToolTip = 'Uninjects Pineapple',
 		Callback = function(callback)
@@ -288,7 +400,7 @@ do
 	})
 end
 
-pineapple:notif('Pineapple', 'rewrite loaded (fuck u whoever wrote that shit code)', 6)
+pineapple:notif('Pineapple', 'Loaded!', 6)
 
 --[[
     specific credits @ 🍍
