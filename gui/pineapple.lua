@@ -68,21 +68,7 @@ else
 		shared.PineappleScriptUninjected = false
 	end
 
-	local ConfigsFolder =  "pineapple/configs"
-	local GameConfig = "pineapple/configs/" ..game.PlaceId
 	local Config = {Library = {ModuleButton = {}, MiniModule = {}, Slider = {}, TextIndicator = {}, Picker = {}}}
-
-	if not isfolder(ConfigsFolder) then makefolder(ConfigsFolder) end
-	if not isfolder(GameConfig) then makefolder(GameConfig) end
-	if isfile(GameConfig) then
-		local GameConfig_Config = readfile(GameConfig)
-		if GameConfig_Config and GameConfig_Config ~= "" then
-			local Success, Settings = pcall(HttpService.JSONDecode, HttpService, GameConfig_Config)
-			if Success and Settings then
-				Config = Settings
-			end
-		end
-	end
 
 	TextChatService.OnIncomingMessage = function(Message)
 		local Properties = Instance.new('TextChatMessageProperties')
@@ -328,14 +314,7 @@ else
 		if shared.PinappleScriptLoaded and not shared.PineappleScriptUninjected then
 			shared.PineappleScriptUninjected = true
 		end
-		writefile(GameConfig, HttpService:JSONEncode(Config))
-	end
-
-	Players.PlayerRemoving:Connect(function(player)
-		if player == Players.LocalPlayer then
-			writefile(GameConfig, HttpService:JSONEncode(Config))
-		end
-	end)
+	end 
 	
 	spawn(function()
 		RunService.RenderStepped:Connect(function()
