@@ -30,8 +30,14 @@ local World = pineapple:CreateTab('World')
 local Exploit = pineapple:CreateTab('Exploit')
 local MathUtils = nil
 
-if require then
-	MathUtils = require(replicatedStorage.Modules.MathUtils)
+local suc, res = pcall(function()
+	return require(replicatedStorage.Modules.MathUtils)
+end)
+
+if suc then
+	MathUtils = res
+else
+	shared.badexec = true
 end
 
 do
@@ -304,65 +310,67 @@ do
 	end)
 end
 
-do
-	local Nuker, Range = nil, 30
-	local RangeSlider
+if shared.badexec == nil then
+	do
+		local Nuker, Range = nil, 30
+		local RangeSlider
 
-	local function getNearestBed()
-		for i, v in workspace.BedsContainer:GetChildren() do
-			local rangePart = v:FindFirstChild("BedHitbox")
+		local function getNearestBed()
+			for i, v in workspace.BedsContainer:GetChildren() do
+				local rangePart = v:FindFirstChild("BedHitbox")
 
-			if rangePart then
-				local Distance =  (lplr.Character.HumanoidRootPart.Position - rangePart.Position).Magnitude
+				if rangePart then
+					local Distance =  (lplr.Character.HumanoidRootPart.Position - rangePart.Position).Magnitude
 
-				if Distance <= Range then
-					return v, rangePart
+					if Distance <= Range then
+						return v, rangePart
+					end
 				end
 			end
+			return 0
 		end
-		return 0
-	end
-	local BreakerRaycastPramas = RaycastParams.new()
-	BreakerRaycastPramas.FilterDescendantsInstances = {workspace.BedsContainer}
-	BreakerRaycastPramas.FilterType = Enum.RaycastFilterType.Include
+		local BreakerRaycastPramas = RaycastParams.new()
+		BreakerRaycastPramas.FilterDescendantsInstances = {workspace.BedsContainer}
+		BreakerRaycastPramas.FilterType = Enum.RaycastFilterType.Include
 
-	Nuker = Exploit:CreateModule({
-		Name = 'Nuker',
-		ToolTip = 'Mine Beds',
-		Callback = function(callback)
-			if callback then
-				local Bed, Distance = getNearestBed()
-				local Pickaxe = getPickaxe()
+		Nuker = Exploit:CreateModule({
+			Name = 'Nuker',
+			ToolTip = 'Mine Beds',
+			Callback = function(callback)
+				if callback then
+					local Bed, Distance = getNearestBed()
+					local Pickaxe = getPickaxe()
 
-				if Bed and Pickaxe and lplr.Character and lplr.Character.PrimaryPart then
-					local CameraPos = CurrentCamera:WorldToViewportPoint(Bed.Position)
-					local Viewport = CurrentCamera:ViewportPointToRay(CameraPos.X, CameraPos.Y)
-					local raycast = workspace:Raycast(Viewport.Origin, Viewport.Direction * 18, BreakerRaycastPramas)
-					local blockPositon = MathUtils.Snap(raycast.Position - raycast.Normal * 1.5, 3)
+					if Bed and Pickaxe and lplr.Character and lplr.Character.PrimaryPart then
+						local CameraPos = CurrentCamera:WorldToViewportPoint(Bed.Position)
+						local Viewport = CurrentCamera:ViewportPointToRay(CameraPos.X, CameraPos.Y)
+						local raycast = workspace:Raycast(Viewport.Origin, Viewport.Direction * 18, BreakerRaycastPramas)
+						local blockPositon = MathUtils.Snap(raycast.Position - raycast.Normal * 1.5, 3)
 
-					local Origin = blockPositon + Vector3.new(0, 5, 0)
-					local Direction = (blockPositon - Origin).Unit
+						local Origin = blockPositon + Vector3.new(0, 5, 0)
+						local Direction = (blockPositon - Origin).Unit
 
-					replicatedStorage.Remotes.ItemsRemotes.MineBlock:FireServer(
-						Pickaxe.Name,
-						Bed.Parent,
-						blockPositon,
-						Origin,
-						Direction
-					)
+						replicatedStorage.Remotes.ItemsRemotes.MineBlock:FireServer(
+							Pickaxe.Name,
+							Bed.Parent,
+							blockPositon,
+							Origin,
+							Direction
+						)
+					end
 				end
-			end
-		end,
-	})
-	RangeSlider = Nuker:CreateSlider({
-		Name = "Range",
-		Min = 3,
-		Max = 35,
-		Default = 30,
-		Callback = function(callback)
-			Range = callback
-		end,
-	})
+			end,
+		})
+		RangeSlider = Nuker:CreateSlider({
+			Name = "Range",
+			Min = 3,
+			Max = 35,
+			Default = 30,
+			Callback = function(callback)
+				Range = callback
+			end,
+		})
+	end
 end
 
 do
