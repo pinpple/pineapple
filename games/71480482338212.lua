@@ -319,60 +319,8 @@ do
 	end)
 end
 
-do
-	local Nuker, Range = nil, 30
-	local RangeSlider
 
-	local function getNearestBed()
-		for i, v in workspace.BedsContainer:GetChildren() do
-			local rangePart = v:FindFirstChild("BedHitbox")
-
-			if rangePart then
-				local Distance =  (lplr.Character.HumanoidRootPart.Position - rangePart.Position).Magnitude
-
-				if Distance <= Range then
-					return v, rangePart
-				end
-			end
-		end
-		return 0
-	end
-	local BreakerRaycastPramas = RaycastParams.new()
-	BreakerRaycastPramas.FilterDescendantsInstances = {workspace.BedsContainer}
-	BreakerRaycastPramas.FilterType = Enum.RaycastFilterType.Include
-
-	Nuker = Exploit:CreateModule({
-		Name = 'Nuker',
-		ToolTip = 'Mine Beds',
-		Callback = function(callback)
-			if callback then
-				runService.Heartbeat:Connect(function()
-					local Bed, part = getNearestBed()
-					local Pickaxe = getPickaxe()
-
-					if Bed and Pickaxe and lplr.Character and lplr.Character.PrimaryPart then 	
-						replicatedStorage.Remotes.ItemsRemotes.MineBlock:FireServer(
-							Pickaxe.Name,
-							Bed.Parent,
-							part.Position,
-							part.Position + Vector3.new(0, 5, 0),
-							(part.Position - part.Position + Vector3.new(0, 5, 0)).Unit
-						)
-					end
-				end)
-			end
-		end,
-	})
-	RangeSlider = Nuker:CreateSlider({
-		Name = "Range",
-		Min = 3,
-		Max = 35,
-		Default = 30,
-		Callback = function(callback)
-			Range = callback
-		end,
-	})
-end
+		
 
 do
 	local SessionInfo
