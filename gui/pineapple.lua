@@ -41,10 +41,11 @@ local Library = {
 	PlaceID = game.PlaceId,
 }
 
-if shared.PinappleScriptLoaded then
+
+if shared.pineapple then
 	warn'already loaded bruv'
 else
-	shared.PinappleScriptLoaded = true
+	print("working bro")
 
 	local cloneref = cloneref or function(obj)
 		return obj
@@ -68,14 +69,12 @@ else
 		shared.PineappleScriptUninjected = false
 	end
 
-	local Config = {Library = {ModuleButton = {}, MiniModule = {}, Slider = {}, TextIndicator = {}, Picker = {}}}
-
 	TextChatService.OnIncomingMessage = function(Message)
 		local Properties = Instance.new('TextChatMessageProperties')
 
-		if Library.Whitelist and not shared.PineappleScriptUninjected and Library.Whitelist[Message.TextSource.UserId].Allowed == true and Library.Whitelist[Message.TextSource.UserId].Blacklisted == false then
+		if Library['Whitelist'] and not shared.PineappleScriptUninjected and Library['Whitelist'][Message.TextSource.UserId].Allowed == true and Library['Whitelist'][Message.TextSource.UserId].Blacklisted == false then
 			task.spawn(function()
-				Properties.PrefixText = '<font color="#' .. Library.Whitelist[Message.TextSource.UserId].Color:ToHex() .. '">' .. "[" .. Library.Whitelist[Message.TextSource.UserId].Tag .. "]" .. '</font>' .. " " .. Properties.PrefixText
+				Properties.PrefixText = '<font color="#' .. Library['Whitelist'][Message.TextSource.UserId].Color:ToHex() .. '">' .. "[" .. Library['Whitelist'][Message.TextSource.UserId].Tag .. "]" .. '</font>' .. " " .. Properties.PrefixText
 			end)
 		end
 
@@ -311,11 +310,11 @@ else
 	end)
 
 	function Library:Uninject()
-		if shared.PinappleScriptLoaded and not shared.PineappleScriptUninjected then
+		if shared.PineappleScriptLoaded and not shared.PineappleScriptUninjected then
 			shared.PineappleScriptUninjected = true
 		end
-	end 
-	
+	end
+
 	spawn(function()
 		RunService.RenderStepped:Connect(function()
 			if ScreenGui then
@@ -323,7 +322,7 @@ else
 					task.wait(1.2)
 					ScreenGui:Destroy()
 					shared.PineappleScriptUninjected = false
-					shared.PinappleScriptLoaded = false
+					shared.PineappleScriptLoaded = false
 					shared.pineapple = nil
 				end
 			end
@@ -731,7 +730,7 @@ else
 	local ArrayFrame = Instance.new("Frame")
 	ArrayFrame.Parent = HudFrame
 	ArrayFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ArrayFrame.BackgroundTransparency = 1.000
+	ArrayFrame.BackgroundTransparency = 1
 	ArrayFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ArrayFrame.BorderSizePixel = 0
 	ArrayFrame.Position = UDim2.new(0.819999993, 0, 0.0399999991, 0)
@@ -795,7 +794,7 @@ else
 
 		TextLabel.TextColor3 = Color3.new(0.447059, 0, 0.670588)
 		TextLabel.TextScaled = true
-		TextLabel.TextSize = 18
+		TextLabel.TextSize = 16
 		TextLabel.TextWrapped = true
 		TextLabel.ZIndex = -1
 		TextLabel.TextXAlignment = Enum.TextXAlignment.Right
@@ -805,8 +804,8 @@ else
 		TextGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(138, 230, 255))}
 		TextGradient.Parent = TextLabel
 
-		local NewWidth = game.TextService:GetTextSize(name, 18, Enum.Font.SourceSans, Vector2.new(0, 0)).X
-		local NewSize = UDim2.new(0.01, game.TextService:GetTextSize(name , 18, Enum.Font.SourceSans, Vector2.new(0,0)).X, 0,20)
+		local NewWidth = game.TextService:GetTextSize(name, 16, Enum.Font.SourceSans, Vector2.new(0, 0)).X
+		local NewSize = UDim2.new(0.01, game.TextService:GetTextSize(name , 16, Enum.Font.SourceSans, Vector2.new(0,0)).X, 0,20)
 		if name == "" then
 			NewSize = UDim2.fromScale(0,0)
 		end
@@ -842,9 +841,9 @@ else
 		if IconColor == nil then IconColor = Color3.fromRGB(255,255,255) end		
 
 		local Tab = Instance.new('Frame', MainFrame)
-		Tab.BackgroundTransparency = 0.03
+		Tab.BackgroundTransparency = 0
 		Tab.BorderSizePixel = 0
-		Tab.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
+		Tab.BackgroundColor3 = Color3.fromRGB(32,32,32)
 		--Tab.Position = UDim2.new(0.014,0,0.081,0)
 		Tab.Size = UDim2.new(0,185,0,25)
 		Tab.ZIndex = 2
@@ -921,17 +920,6 @@ else
 				Callback = ToggleButton.Callback or function() end
 			}
 
-			if not Config.Library.ModuleButton[ToggleButton.Name] then
-				Config.Library.ModuleButton[ToggleButton.Name] = {
-					ToolTip = ToggleButton.ToolTip,
-					Keybind = ToggleButton.Keybind,
-					Enabled = ToggleButton.Enabled,
-				}
-			else
-				ToggleButton.Enabled = Config.Library.ModuleButton[ToggleButton.Name].Enabled
-				ToggleButton.Keybind = Config.Library.ModuleButton[ToggleButton.Name].Keybind
-				ToggleButton.ToolTip = Config.Library.ModuleButton[ToggleButton.Name].ToolTip
-			end
 
 			local toggleButton = Instance.new('TextButton', TogglesList)
 			toggleButton.Text = ''
@@ -966,20 +954,19 @@ else
 
 			local function ToggleButtonClicked()
 				if ToggleButton.Enabled then
-					Config.Library.ModuleButton[ToggleButton.Name].Enabled = ToggleButton.Enabled
+					--Config.Library.ModuleButton[ToggleButton.Name].Enabled = ToggleButton.Enabled
 					Library:notif("Pineapple", "Toggled "..ToggleButton.Name, 2.5, "info")
 					AddArray(ToggleButton.Name)
 					TweenService:Create(toggleButton, TweenInfo.new(0.4), {Transparency = 0,BackgroundColor3 = Color3.fromRGB(227, 201, 1)}):Play()
 					TweenService:Create(uigrad, TweenInfo.new(0.4), {Enabled = true}):Play()
 				else
-					Config.Library.ModuleButton[ToggleButton.Name].Enabled = ToggleButton.Enabled
+					--Config.Library.ModuleButton[ToggleButton.Name].Enabled = ToggleButton.Enabled
 					Library:notif("Pineapple", "UnToggled "..ToggleButton.Name, 2.5, "info")
 					RemoveArray(ToggleButton.Name)
 					TweenService:Create(toggleButton, TweenInfo.new(0.4), {BackgroundColor3 = Color3.fromRGB(45,45,45)}):Play()  
 					TweenService:Create(uigrad, TweenInfo.new(0.4), {Enabled = false}):Play()
 				end
 			end
-
 			local DropdownButton = Instance.new('TextButton', toggleButton)
 			DropdownButton.AnchorPoint = Vector2.new(0.5,0.5)
 			DropdownButton.BackgroundTransparency = 1
@@ -1044,7 +1031,7 @@ else
 			table.insert(DropdownToggles, KeybindButton)
 
 			local keybindText = Instance.new('TextLabel', KeybindButton)
-			keybindText.Text = 'Keybind'
+			keybindText.Text = 'Keybind: '
 			keybindText.TextColor3 = Color3.fromRGB(255,255,255)
 			keybindText.FontFace = Font.fromEnum(Enum.Font.Arimo, Enum.FontWeight.Regular)
 			keybindText.TextScaled = false
@@ -1095,7 +1082,6 @@ else
 				end)
 			end)
 
-
 			RunService.RenderStepped:Connect(function()
 				if shared.PineappleScriptUninjected then
 					ToggleButton.Keybind = 'Unknown'
@@ -1113,13 +1099,13 @@ else
 						keybindTextbox.Text = Input.KeyCode.Name
 						keybindTextbox:ReleaseFocus()
 
-						Config.Library.ModuleButton[ToggleButton.Name].Keybind = ToggleButton.Keybind
+						--Config.Library.ModuleButton[ToggleButton.Name].Keybind = ToggleButton.Keybind
 					elseif ToggleButton.Keybind == 'Backspace' then
 						ToggleButton.Keybind = 'Unknown'
 						keybindTextbox.Text = 'Unknown'
 						keybindTextbox.PlaceholderText = ''
 
-						Config.Library.ModuleButton[ToggleButton.Name].Keybind = ToggleButton.Keybind
+						--Config.Library.ModuleButton[ToggleButton.Name].Keybind = ToggleButton.Keybind
 					end
 					if not isTyping then
 						if ToggleButton.Keybind ~= 'Unknown' then
@@ -1150,14 +1136,6 @@ else
 					Enabled = MinitoggleProperties.Enabled or false,
 					Callback = MinitoggleProperties.Callback or function() end
 				}
-
-				if not Config.Library.MiniModule[MinitoggleProperties.Name] then
-					Config.Library.MiniModule[MinitoggleProperties.Name] = {
-						Enabled = MinitoggleProperties.Enabled,
-					}
-				else
-					MinitoggleProperties.Enabled = Config.Library.MiniModule[MinitoggleProperties.Name].Enabled
-				end
 
 				ToggleMenu.Size = UDim2.new(1,0,0,ToggleMenu.Size.Y.Offset + 25)
 				local toggleButton = Instance.new('TextButton', ToggleMenu)
@@ -1208,10 +1186,10 @@ else
 
 				local function ToggleButtonClicked()
 					if MinitoggleProperties.Enabled then
-						Config.Library.MiniModule[MinitoggleProperties.Name].Enabled = MinitoggleProperties.Enabled
+						--Config.Library.MiniModule[MinitoggleProperties.Name].Enabled = MinitoggleProperties.Enabled
 						TweenService:Create(ButtonSlider, TweenInfo.new(0.4), {Position = ButtonEnd}):Play()
 					else
-						Config.Library.MiniModule[MinitoggleProperties.Name].Enabled = MinitoggleProperties.Enabled
+						--Config.Library.MiniModule[MinitoggleProperties.Name].Enabled = MinitoggleProperties.Enabled
 						TweenService:Create(ButtonSlider, TweenInfo.new(0.4), {Position = buttonStart}):Play() 
 					end
 				end
@@ -1258,13 +1236,6 @@ else
 					Default = sliderProperties.Default,
 					Callback = sliderProperties.Callback or function() end
 				}
-				if not Config.Library.Slider[sliderProperties.Name] then
-					Config.Library.Slider[sliderProperties.Name] = {
-						Default = sliderProperties.Default
-					}
-				else
-					sliderProperties.Default = Config.Library.Slider[sliderProperties.Name].Default
-				end
 
 				local Value
 				local Dragged = false
@@ -1363,7 +1334,7 @@ else
 					SliderHolderValue.Text = SliderValue
 					sliderProperties.Callback(SliderValue)
 
-					Config.Library.Slider[sliderProperties.Name].Default = SliderValue
+
 				end
 
 				SliderHolderMain.MouseButton1Down:Connect(function()
@@ -1399,13 +1370,6 @@ else
 					Callback = TextIndicator.Callback or function() end
 				}
 
-				if not Config.Libraries.TextIndicator[TextIndicator.Name] then
-					Config.Libraries.TextIndicator[TextIndicator.Name] = {
-						DefaultText = TextIndicator.DefaultText,
-					}
-				else
-					TextIndicator.DefaultText = Config.Libraries.TextIndicator[TextIndicator.Name].DefaultText
-				end
 
 				local TextIndicatorText = Instance.new('TextBox')
 				TextIndicatorText.Parent = ToggleMenu
@@ -1424,7 +1388,7 @@ else
 				TextIndicatorText.TextXAlignment = Enum.TextXAlignment.Left
 
 				TextIndicatorText:GetPropertyChangedSignal('Text'):Connect(function()
-					Config.Libraries.TextIndicator[TextIndicator.Name].DefaultText = TextIndicatorText.Text
+					--Config.Libraries.TextIndicator[TextIndicator.Name].DefaultText = TextIndicatorText.Text
 					TextIndicator.Callback(TextIndicatorText.Text)
 				end)
 				return TextIndicator
@@ -1437,14 +1401,6 @@ else
 					Default = Picker.Default or Picker.Options[1],
 					Callback = Picker.Callback or function(callback) end
 				}
-
-				if not Config.Libraries.Picker[Picker.Name] then
-					Config.Libraries.Picker[Picker.Name] = {
-						Default = Picker.Default,
-					}
-				else
-					Picker.Default = Config.Libraries.Picker[Picker.Name].Default
-				end
 
 				local PickerFrame = Instance.new("Frame", TogglesList)
 				PickerFrame.BackgroundColor3 = Color3.fromRGB(45,45,45)
@@ -1498,14 +1454,14 @@ else
 						TweenService:Create(uigrad, TweenInfo.new(0.4), {Enabled = true}):Play()
 						for _, toggle in pairs(PickerToggleFrame:GetChildren()) do
 							if toggle:IsA("TextButton") and toggle ~= Button then
-								TweenService:Create(toggle, TweenInfo.new(0.4), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()  
+								TweenService:Create(toggle, TweenInfo.new(0.4), {BackgroundColor3 = Color3.fromRGB(45,45,45)}):Play()  
 								TweenService:Create(toggle:FindFirstChildOfClass("UIGradient"), TweenInfo.new(0.4), {Enabled = false}):Play()
 								Button:SetAttribute("Enabled", false)
 							end
 						end
 						return true
 					else
-						TweenService:Create(Button, TweenInfo.new(0.4), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()  
+						TweenService:Create(Button, TweenInfo.new(0.4), {BackgroundColor3 = Color3.fromRGB(45,45,45)}):Play()  
 						TweenService:Create(uigrad, TweenInfo.new(0.4), {Enabled = false}):Play()
 						Button:SetAttribute("Enabled", false)
 						return false
@@ -1530,7 +1486,7 @@ else
 						PickerToggle:SetAttribute("Enabled", false)
 						PickerToggle.Text = ''
 						PickerToggle.BorderSizePixel = 0
-						PickerToggle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+						PickerToggle.BackgroundColor3 = Color3.fromRGB(45,45,45)
 						PickerToggle.Size = UDim2.new(1, 0,0, 25)
 						PickerToggleFrame.Size = UDim2.new(1,0,0,PickerToggleFrame.Size.Y.Offset + 25)
 
@@ -1569,7 +1525,7 @@ else
 
 						PickerToggle.MouseButton1Click:Connect(function()
 							if ToggleButtonClickedd(PickerToggle, uigrad) then
-								Config.Libraries.Picker[Picker.Name].Default = ToggleToAdd
+								--Config.Libraries.Picker[Picker.Name].Default = ToggleToAdd
 								Picker.Callback(ToggleToAdd)
 							end
 						end)
